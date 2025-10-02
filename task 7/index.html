@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fetch API Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f6f8;
+    }
+    h1 {
+      text-align: center;
+    }
+    #buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    #users {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 15px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 8px;
+      padding: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card h3 {
+      margin: 0 0 10px;
+      color: #333;
+    }
+    .card p {
+      margin: 5px 0;
+      color: #555;
+    }
+    #error {
+      color: red;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <h1>Fetch API - Display Users</h1>
+  <div id="buttons">
+    <button id="loadBtn">Load Users</button>
+    <button id="reloadBtn">Reload</button>
+  </div>
+  <div id="error"></div>
+  <div id="users"></div>
+
+  <script>
+    const usersDiv = document.getElementById("users");
+    const errorDiv = document.getElementById("error");
+
+    document.getElementById("loadBtn").addEventListener("click", fetchUsers);
+    document.getElementById("reloadBtn").addEventListener("click", fetchUsers);
+
+    function fetchUsers() {
+      usersDiv.innerHTML = "<p>Loading...</p>";
+      errorDiv.textContent = "";
+
+      fetch("https://jsonplaceholder.typicode.com/users")
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(data => {
+          usersDiv.innerHTML = ""; // Clear old content
+          data.forEach(user => {
+            const card = document.createElement("div");
+            card.classList.add("card");
+            card.innerHTML = `
+              <h3>${user.name}</h3>
+              <p><strong>Email:</strong> ${user.email}</p>
+              <p><strong>Address:</strong> ${user.address.street}, ${user.address.city}</p>
+            `;
+            usersDiv.appendChild(card);
+          });
+        })
+        .catch(error => {
+          usersDiv.innerHTML = "";
+          errorDiv.textContent = "⚠️ Error fetching users: " + error.message;
+        });
+    }
+  </script>
+</body>
+</html>
